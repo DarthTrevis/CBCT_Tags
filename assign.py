@@ -33,8 +33,10 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
                       "time \033[01;34m%s\033[00;37m with comment: "
                       "\"%s\"" % (str(num_next_cbct+1),
                                   nxt_cbct.time,
-                                  "\033[00;33m" + nxt_cbct.comment +
-                                  "\033[00;37m"))
+                                  nxt_cbct.comment and "\033[00;33m" +
+                                  nxt_cbct.comment +
+                                  "\033[00;37m" or
+                                  "\033[00;31mNot commented\033[00;37m"))
                 matches += 1
     if not matches:
         print("False [auto] - No second CBCT on same patient in the next "
