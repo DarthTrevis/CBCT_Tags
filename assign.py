@@ -8,12 +8,12 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     matches = 0
     if next_cbcts_to_preview:
         for num_next_cbct in range(len(next_cbcts_to_preview)):
-            next_cbct = next_cbcts_to_preview[num_next_cbct]
-            if cbct.same_date(next_cbct) and cbct.same_treatment(next_cbct):
+            nxt_cbct = next_cbcts_to_preview[num_next_cbct]
+            if cbct.same_date(nxt_cbct) and cbct.same_treatment(nxt_cbct):
                 print("%s CBCT later: SAME treatment at time %s with comment: "
                       "\"%s\"" % (str(num_next_cbct+1),
-                                  next_cbct.time,
-                                  next_cbct.comment))
+                                  nxt_cbct.time,
+                                  nxt_cbct.comment))
                 matches += 1
     if not matches:
         print("False [auto] - No second CBCT on same patient in the next "
