@@ -40,9 +40,13 @@ class Cbct:
 
     def __repr__(self):
         return "For treatment #%s on date %s at %s with comment :\"%s\"" % (
-            self.treatment, self.date, self.time, self.comment
-        )
+            self.treatment, self.date, self.time, self.comment)
 
     def get_look_str(self):
-        return "For treatment #%s on date %s at %s with comment :\n\n\t %s\n\n"\
-               % (self.treatment, self.date, self.time, self.comment)
+        if self.comment:
+            comment = "\033[01;33m"+self.comment+"\033[00;37m"
+        else:
+            comment = "\033[00;31mNot commented\033[00;37m"
+        return "For treatment #%s on date %s at \033[01;34m%s\033[00;37m " \
+               "with comment :\n\n\t %s\n\n"\
+               % (self.treatment, self.date, self.time, comment)
