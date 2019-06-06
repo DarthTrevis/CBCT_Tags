@@ -1,4 +1,4 @@
-setwd("~/code/bladder_coms")
+setwd(".")
 
 data <- read.csv2('rad_seance.csv', colClasses = rep("character",4))
 colnames(data) <- c("treatment", "date", "time", "comment")
