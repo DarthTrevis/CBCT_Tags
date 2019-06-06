@@ -1,8 +1,27 @@
+"""
+License GNU GPL 3
+Author: Florian Charlier
+"""
+
+
 import csv
 import Cbct
+from typing import List
 
 
 def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
+    # type: (Cbct, str, List[Cbct])-> bool
+    """
+    Returns the user or automatic assessment based on rules on whether the
+    reason suggested is why the CBCT was rejected, if applicable, or allows to
+    raise SystemExit.
+
+    :param cbct: Cbct object to evaluate
+    :param reason_to_test: Possible explanation evaluated
+    :param next_cbcts_to_preview: List of following CBCTs performed to get more
+            information
+    :return: Probably true or false explanation
+    """
     print("-------------------------------------------------------------------")
     print(reason_to_test, "? ", cbct.get_look_str())
     matches = 0
