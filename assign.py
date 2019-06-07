@@ -9,11 +9,10 @@ import Cbct
 from typing import List
 
 
-# todo: add a column to log whether assignment was manual or automatic
 # todo: convert cbcts to log_elements in is_why
 
 def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
-    # type: (Cbct, str, List[Cbct])-> bool
+    # type: (Cbct, str, List[Cbct])-> (bool, str)
     """
     Returns the user or automatic assessment based on rules on whether the
     reason suggested is why the CBCT was rejected, if applicable, or allows to
@@ -48,11 +47,11 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     if not comment:
         print("False[Auto] - No comment available for all imaging performed "
               "this day for this treatment")
-        return False
+        return False, "rule2"
     if not matches:
         print("False [auto] - No second CBCT on same patient in the next "
               "%i CBCTs" % len(next_cbcts_to_preview))
-        return False
+        return False, "rule1"
 
     if reason_to_test == "bladder":
         try:
@@ -66,10 +65,10 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
                                                          reason_to_test))
                 if choice == "1":
                     print(True)
-                    return True
+                    return True, "manual"
                 elif choice == "0":
                     print(False)
-                    return False
+                    return False, "manual"
                 elif choice == "2" or choice == "q":
                     print("Exiting")
                     raise ValueError("exit")
@@ -90,6 +89,7 @@ with open(in_file, 'r') as in_csv:
     columns = in_reader.fieldnames
 
 columns.append(reason)
+columns.append("labeling_method")
 
 while 1:
     with open(in_file, 'r') as in_csv:
@@ -102,11 +102,12 @@ while 1:
             for _num in range(nb_next_cbcts):
                 next_cbct = next(in_reader)
                 next_cbcts.append(Cbct.Cbct(**next_cbct))
-            is_reason = is_why(cbct1, reason, next_cbcts)
+            is_reason, labeling_method = is_why(cbct1, reason, next_cbcts)
         except SystemExit:
             exit(0)
         else:
             in_line1[reason] = is_reason
+            in_line1["labeling_method"] = labeling_method
             out_lines = []
             # Add line in processed file
             try:
