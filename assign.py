@@ -12,8 +12,8 @@ from colorama import init as colorama_init
 
 # todo: convert cbcts to log_elements in is_why
 
-def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
-    # type: (Cbct, str, List[Cbct])-> (bool, str)
+def is_why(cbct, reason_to_test, next_cbcts_to_preview=None, debug=False):
+    # type: (Cbct, str, List[Cbct], bool)-> (bool, str)
     """
     Returns the user or automatic assessment based on rules on whether the
     reason suggested is why the CBCT was rejected, if applicable, or allows to
@@ -23,6 +23,7 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     :param reason_to_test: Possible explanation evaluated
     :param next_cbcts_to_preview: List of following CBCTs performed to get more
             information
+    :param debug: Use this to implement special behavior for debug
     :return: Probably true or false explanation
     """
     print("-------------------------------------------------------------------")
@@ -56,6 +57,9 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
               "%i CBCTs" % len(next_cbcts_to_preview))
         return False, "rule1"
 
+    if debug:
+        return False, "debug"
+
     if reason_to_test == "bladder":
         try:
             while 1:
@@ -81,10 +85,12 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
         raise NotImplemented
 
 
-in_file = "./ok_cols.csv"
+in_file = "./ok_cols_debug.csv"
 reason = "bladder"
 out_file = "./" + reason + "_out.csv"
-nb_next_cbcts = 5
+nb_next_cbcts = 10
+
+debugging = False
 
 colorama_init()
 
@@ -97,44 +103,48 @@ columns.append(reason)
 columns.append("labeling_method")
 
 while 1:
-    with open(in_file, 'r') as in_csv:
-        in_reader = csv.DictReader(in_csv)
-        read_lines = []
-        next_cbcts = []
-        try:
-            in_line1 = next(in_reader)
-            cbct1 = Cbct.Cbct(**in_line1)
-            for _num in range(nb_next_cbcts):
-                next_cbct = next(in_reader)
-                next_cbcts.append(Cbct.Cbct(**next_cbct))
-            is_reason, labeling_method = is_why(cbct1, reason, next_cbcts)
-        except SystemExit:
-            exit(0)
-        else:
-            in_line1[reason] = is_reason
-            in_line1["labeling_method"] = labeling_method
-            out_lines = []
-            # Add line in processed file
+    try:
+        with open(in_file, 'r') as in_csv:
+            in_reader = csv.DictReader(in_csv)
+            read_lines = []
+            next_cbcts = []
             try:
-                with open(out_file, "r") as out_csv:
-                    out_reader = csv.DictReader(out_csv)
-                    for out_line in out_reader:
-                        out_lines.append(out_line)
-            except FileNotFoundError:
-                pass
+                in_line1 = next(in_reader)
+                cbct1 = Cbct.Cbct(**in_line1)
+                for _num in range(nb_next_cbcts):
+                    next_cbct = next(in_reader)
+                    next_cbcts.append(Cbct.Cbct(**next_cbct))
+                is_reason, labeling_method = is_why(cbct1, reason, next_cbcts,
+                                                    debugging)
+            except SystemExit:
+                exit(0)
+            else:
+                in_line1[reason] = is_reason
+                in_line1["labeling_method"] = labeling_method
+                out_lines = []
+                # Add line in processed file
+                try:
+                    with open(out_file, "r") as out_csv:
+                        out_reader = csv.DictReader(out_csv)
+                        for out_line in out_reader:
+                            out_lines.append(out_line)
+                except FileNotFoundError:
+                    pass
 
-            with open(out_file, "w+") as out_csv:
-                writer = csv.DictWriter(out_csv, fieldnames=columns,
-                                        quoting=csv.QUOTE_ALL)
-                writer.writeheader()
-                if out_lines:
-                    writer.writerows(out_lines)
-                writer.writerow(in_line1)
+                with open(out_file, "w+") as out_csv:
+                    writer = csv.DictWriter(out_csv, fieldnames=columns,
+                                            quoting=csv.QUOTE_ALL)
+                    writer.writeheader()
+                    if out_lines:
+                        writer.writerows(out_lines)
+                    writer.writerow(in_line1)
 
-    # Remove line in inputs
-    with open(in_file, 'r') as in_csv:
-        lines = in_csv.readlines()
-        lines = [lines[0]] + lines[2:]
+        # Remove line in inputs
+        with open(in_file, 'r') as in_csv:
+            lines = in_csv.readlines()
+            lines = [lines[0]] + lines[2:]
 
-    with open(in_file, 'w') as in_csv:
-        in_csv.writelines(lines)
+        with open(in_file, 'w') as in_csv:
+            in_csv.writelines(lines)
+    except StopIteration:
+        exit(0)
