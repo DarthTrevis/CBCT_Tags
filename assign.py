@@ -86,7 +86,7 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None, debug=False):
         raise NotImplemented
 
 
-root_dir = "../DataLabels/"
+root_dir = "../../Documents/vessies/"
 
 in_file = os.path.join(root_dir, "ok_cols.csv")
 reason = "bladder"
@@ -116,10 +116,27 @@ while 1:
                 in_line1 = next(in_reader)
                 cbct1 = Cbct.Cbct(**in_line1)
                 for _num in range(nb_next_cbcts):
-                    next_cbct = next(in_reader)
-                    next_cbcts.append(Cbct.Cbct(**next_cbct))
-                is_reason, labeling_method = is_why(cbct1, reason, next_cbcts,
-                                                    debugging)
+                    try:
+                        next_cbct = next(in_reader)
+                        next_cbcts.append(Cbct.Cbct(**next_cbct))
+                    except StopIteration:
+                        pass
+                if not cbct1.verify:
+                    is_reason, labeling_method = is_why(cbct1, reason,
+                                                        next_cbcts, debugging)
+                else:
+                    if cbct1.verify == "debug" and \
+                            in_line1["labeling_method"] != "manual":
+                        is_reason, labeling_method = is_why(cbct1, reason,
+                                                            next_cbcts)
+                    elif cbct1.verify in ("rule1", "rule2") and \
+                            cbct1.verify != in_line1["labeling_method"]:
+                        is_reason, labeling_method = in_line1[reason], \
+                                                     cbct1.verify
+                    else:
+                        is_reason, labeling_method = in_line1[reason], \
+                                                     in_line1["labeling_method"]
+
             except SystemExit:
                 exit(0)
             else:
@@ -150,5 +167,6 @@ while 1:
 
         with open(in_file, 'w') as in_csv:
             in_csv.writelines(lines)
+
     except StopIteration:
         exit(0)

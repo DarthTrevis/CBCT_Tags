@@ -11,6 +11,8 @@ class LogElement:
         self.comment = kwargs["comment"]
         self.treatment = kwargs["treatment"]
 
+        self.verify = "verify" in kwargs.keys() and kwargs["verify"] or ""
+
     def same_date(self, l_elem):
         # type: (LogElement) -> bool
 
