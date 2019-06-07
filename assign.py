@@ -5,9 +5,12 @@ Author: Florian Charlier
 
 
 import csv
-import Cbct
+import os
 from typing import List
+
 from colorama import init as colorama_init
+
+import Cbct
 
 
 # todo: convert cbcts to log_elements in is_why
@@ -26,7 +29,7 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None, debug=False):
     :param debug: Use this to implement special behavior for debug
     :return: Probably true or false explanation
     """
-    print("-------------------------------------------------------------------")
+    print("-----------------------------------------------------------------\n")
     print(reason_to_test, "? ", cbct.get_look_str())
     matches = 0
     comment = cbct.comment and 1 or 0
@@ -85,9 +88,12 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None, debug=False):
         raise NotImplemented
 
 
-in_file = "./ok_cols_debug.csv"
+root_dir = "../DataLabels/"
+
+in_file = os.path.join(root_dir, "ok_cols.csv")
 reason = "bladder"
-out_file = "./" + reason + "_out.csv"
+out_file = os.path.join(root_dir, reason + "_out.csv")
+
 nb_next_cbcts = 10
 
 debugging = False
