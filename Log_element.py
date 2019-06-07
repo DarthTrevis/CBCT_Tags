@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 
 
 class Log_element:
@@ -48,3 +48,6 @@ class Log_element:
         return "For treatment #%s on date %s at \033[01;34m%s\033[00;37m " \
                "with comment :\n\n\t %s\n\n"\
                % (self.treatment, self.date, self.time, comment)
+
+    def get_time(self):
+        return datetime.strptime(self.time, "%H:%M")

@@ -9,6 +9,9 @@ import Cbct
 from typing import List
 
 
+# todo: add a column to log whether assignment was manual or automatic
+# todo: convert cbcts to log_elements in is_why
+
 def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     # type: (Cbct, str, List[Cbct])-> bool
     """
@@ -25,19 +28,27 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     print("-------------------------------------------------------------------")
     print(reason_to_test, "? ", cbct.get_look_str())
     matches = 0
+    comment = 0
     if next_cbcts_to_preview:
         for num_next_cbct in range(len(next_cbcts_to_preview)):
             nxt_cbct = next_cbcts_to_preview[num_next_cbct]
+            time_diff = str(nxt_cbct.get_time() - cbct.get_time())[:-3]
             if cbct.same_date(nxt_cbct) and cbct.same_treatment(nxt_cbct):
                 print("\033[01;34m%s CBCT later\033[00;37m: SAME treatment at "
-                      "time \033[01;34m%s\033[00;37m with comment: "
+                      "\033[01;34m%s\033[01;35m(+%s)\033[00;37m with comment: "
                       "\"%s\"" % (str(num_next_cbct+1),
-                                  nxt_cbct.time,
+                                  nxt_cbct.time, time_diff,
                                   nxt_cbct.comment and "\033[00;33m" +
                                   nxt_cbct.comment +
                                   "\033[00;37m" or
                                   "\033[00;31mNot commented\033[00;37m"))
                 matches += 1
+                if nxt_cbct.comment:
+                    comment = 1
+    if not comment:
+        print("False[Auto] - No comment available for all imaging performed "
+              "this day for this treatment")
+        return False
     if not matches:
         print("False [auto] - No second CBCT on same patient in the next "
               "%i CBCTs" % len(next_cbcts_to_preview))
