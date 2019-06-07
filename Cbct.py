@@ -1,11 +1,11 @@
-from Log_element import Log_element
+from LogElement import LogElement
 
 
-class Cbct(Log_element):
+class Cbct(LogElement):
     """
     CBCT object to hold extracted data
     """
     def __init__(self, **kwargs):
-        Log_element.__init__(self, **kwargs)
+        LogElement.__init__(self, **kwargs)
         self.type = "image"
         self.type_type = "CBCT"

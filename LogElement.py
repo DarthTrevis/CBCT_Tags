@@ -1,7 +1,7 @@
-from datetime import datetime, time
+from datetime import datetime
 
 
-class Log_element:
+class LogElement:
     """
     Log element object to hold extracted data
     """
@@ -12,7 +12,7 @@ class Log_element:
         self.treatment = kwargs["treatment"]
 
     def same_date(self, l_elem):
-        # type: (Log_element) -> bool
+        # type: (LogElement) -> bool
 
         """
         Checks whether another log_element was logged on same (hashed) date
