@@ -7,6 +7,7 @@ Author: Florian Charlier
 import csv
 import Cbct
 from typing import List
+from colorama import init as colorama_init
 
 
 # todo: convert cbcts to log_elements in is_why
@@ -45,13 +46,14 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
                 if nxt_cbct.comment:
                     comment = 1
     if not comment:
-        print("False[Auto] - No comment available for all imaging performed "
-              "this day for this treatment")
+        if not matches:
+            print("False [auto] - No second CBCT on same patient in the next "
+                  "%i CBCTs" % len(next_cbcts_to_preview))
+            return False, "rule1"
+        else:
+            print("False[Auto] - No comment available for all imaging performed "
+                  "this day for this treatment")
         return False, "rule2"
-    if not matches:
-        print("False [auto] - No second CBCT on same patient in the next "
-              "%i CBCTs" % len(next_cbcts_to_preview))
-        return False, "rule1"
 
     if reason_to_test == "bladder":
         try:
@@ -82,6 +84,8 @@ in_file = "./ok_cols.csv"
 reason = "bladder"
 out_file = "./" + reason + "_out.csv"
 nb_next_cbcts = 5
+
+colorama_init()
 
 # Fetch columns
 with open(in_file, 'r') as in_csv:
