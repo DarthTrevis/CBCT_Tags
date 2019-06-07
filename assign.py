@@ -28,7 +28,8 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
     print("-------------------------------------------------------------------")
     print(reason_to_test, "? ", cbct.get_look_str())
     matches = 0
-    comment = 0
+    comment = cbct.comment and 1 or 0
+
     if next_cbcts_to_preview:
         for num_next_cbct in range(len(next_cbcts_to_preview)):
             nxt_cbct = next_cbcts_to_preview[num_next_cbct]
@@ -46,14 +47,14 @@ def is_why(cbct, reason_to_test, next_cbcts_to_preview=None):
                 if nxt_cbct.comment:
                     comment = 1
     if not comment:
-        if not matches:
-            print("False [auto] - No second CBCT on same patient in the next "
-                  "%i CBCTs" % len(next_cbcts_to_preview))
-            return False, "rule1"
-        else:
-            print("False[Auto] - No comment available for all imaging performed "
-                  "this day for this treatment")
+        print("False[Auto] - No comment available for all imaging performed "
+              "this day for this treatment")
         return False, "rule2"
+
+    if not matches:
+        print("False [auto] - No second CBCT on same patient in the next "
+              "%i CBCTs" % len(next_cbcts_to_preview))
+        return False, "rule1"
 
     if reason_to_test == "bladder":
         try:
