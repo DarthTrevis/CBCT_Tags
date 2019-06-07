@@ -9,7 +9,11 @@ import csv
 
 
 def my_repr(string):
-    return repr(string)[1:-1]
+    base = repr(string)
+    base = base.replace("\\n", " || ")[1:-1]
+    base = base.replace("\\r", " | ")
+    base = base.replace("\\t", " | ")
+    return base
 
 
 data = pd.read_csv('input.csv', sep=";", quotechar="\"",
