@@ -12,7 +12,7 @@ def my_repr(string):
     return repr(string)[1:-1]
 
 
-data = pd.read_csv('rad_seance_orig.csv', sep=";", quotechar="\"",
+data = pd.read_csv('input.csv', sep=";", quotechar="\"",
                    names=["treatment", "date", "time", "comment"],
                    dtype=str, header=0, na_filter=False, escapechar="\\")
 
