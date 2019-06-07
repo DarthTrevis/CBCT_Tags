@@ -13,8 +13,6 @@ from colorama import init as colorama_init
 import Cbct
 
 
-# todo: convert cbcts to log_elements in is_why
-
 def is_why(cbct, reason_to_test, next_cbcts_to_preview=None, debug=False):
     # type: (Cbct, str, List[Cbct], bool)-> (bool, str)
     """
