@@ -1,5 +1,5 @@
 """
-Exctracts useful lines from DB select export to have only lines where a second
+Extracts useful lines from DB select export to have only lines where a second
 CBCT has been performed on the same day for the same treatment.
 """
 import pandas as pd
